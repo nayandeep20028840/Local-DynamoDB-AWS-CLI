@@ -1,0 +1,72 @@
+
+
+<!DOCTYPE html>
+<html>
+<body>
+
+    <h1>Banking System (Single Table)</h1>
+
+    <section>
+        <h2>1. Create User Profile</h2>
+        <input id="userName" placeholder="Enter Full Name">
+        <input id="userEmail" placeholder="Enter Email">
+        <button onclick="addUser()">Create User</button>
+    </section>
+
+    <section>
+        <h2>2. Record Transaction</h2>
+        <input id="accId" placeholder="Account ID (e.g. 999)">
+        <input id="amount" type="number" placeholder="Amount (e.g. -50)">
+        <input id="detail" placeholder="Detail (e.g. Starbucks)">
+        <button onclick="addTransaction()">Submit Payment</button>
+    </section>
+
+    <section>
+        <h2>3. View Dashboard / History</h2>
+        <input id="searchId" placeholder="Enter USER# or ACC#">
+        <button onclick="loadDashboard()">Load Data</button>
+        <pre id="display"></pre>
+    </section>
+
+    <script>
+        const API_BASE = "http://localhost:3000";
+
+        async function addUser() {
+            const name = document.getElementById("userName").value;
+            const email = document.getElementById("userEmail").value;
+            
+            const res = await fetch(`${API_BASE}/users`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ name, email })
+            });
+            console.log(res);
+            const data = await res.json();
+            console.log(data);
+            alert(`User Created! ID: ${data.userId}`);
+        }
+
+        async function addTransaction() {
+            const accountId = document.getElementById("accId").value;
+            const amount = document.getElementById("amount").value;
+            const detail = document.getElementById("detail").value;
+
+            await fetch(`${API_BASE}/transactions`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ accountId, amount, detail })
+            });
+            alert("Transaction Recorded!");
+        }
+
+        async function loadDashboard() {
+            const id = document.getElementById("searchId").value;
+            const res = await fetch(`${API_BASE}/dashboard/${id}`);
+            const data = await res.json();
+            
+            document.getElementById("display").innerText = JSON.stringify(data, null, 2);
+        }
+    </script>
+
+</body>
+</html>
