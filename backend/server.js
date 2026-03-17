@@ -1,15 +1,12 @@
-const express = require("express");
+const express = require("express"); // not used in codestax.ai
 const AWS = require("aws-sdk");
 const cors = require("cors");
 
 const app = express();
-app.use(cors());
+app.use(cors({ origin: "http://localhost:5000" }));
 app.use(express.json());
 
-const dynamodb = new AWS.DynamoDB.DocumentClient({
-    region: "local",
-    endpoint: "http://localhost:8000"
-});
+const dynamodb = new AWS.DynamoDB.DocumentClient({ region: "local", endpoint: "http://localhost:8000" });
 
 const TABLE_NAME = "PaymentBanking";
 
@@ -31,11 +28,11 @@ app.post("/users", async (req, res) => {
 });
 
 app.post("/transactions", async (req, res) => {
-    const { accountId, amount, detail } = req.body;
+    const { userId, amount, detail } = req.body;
     const params = {
         TableName: TABLE_NAME,
         Item: {
-            PK: `ACC#${accountId}`,
+            PK: `USER#${userId}`,
             SK: `TX#${new Date().toISOString()}`,
             amount: amount,
             detail: detail,
